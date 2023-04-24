@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	// "strings"
 	"time"
 	"x-ui/database"
 	"x-ui/database/model"
@@ -133,13 +134,15 @@ func (s *InboundService) checkEmailExistForInbound(inbound *model.Inbound) (stri
 }
 
 func (s *InboundService) AddInbound(inbound *model.Inbound) (*model.Inbound, error) {
-	exist, err := s.checkPortExist(inbound.Port, 0)
-	if err != nil {
-		return inbound, err
-	}
-	if exist {
-		return inbound, common.NewError("Port already exists:", inbound.Port)
-	}
+    // if !strings.HasPrefix(inbound.Listen, "/") && !strings.HasPrefix(inbound.Listen, "@") {
+    //     exist, err := s.checkPortExist(inbound.Port, 0)
+    //     if err != nil {
+    //         return inbound, err
+    //     }
+    //     if exist {
+    //         return inbound, common.NewError("Port already exists:", inbound.Port)
+    //     }
+    // }
 
 	existEmail, err := s.checkEmailExistForInbound(inbound)
 	if err != nil {
@@ -166,15 +169,17 @@ func (s *InboundService) AddInbound(inbound *model.Inbound) (*model.Inbound, err
 }
 
 func (s *InboundService) AddInbounds(inbounds []*model.Inbound) error {
-	for _, inbound := range inbounds {
-		exist, err := s.checkPortExist(inbound.Port, 0)
-		if err != nil {
-			return err
-		}
-		if exist {
-			return common.NewError("Port already exists:", inbound.Port)
-		}
-	}
+	// for _, inbound := range inbounds {
+ //        if !strings.HasPrefix(inbound.Listen, "/") && !strings.HasPrefix(inbound.Listen, "@") {
+ //            exist, err := s.checkPortExist(inbound.Port, 0)
+ //            if err != nil {
+ //                return err
+ //            }
+ //            if exist {
+ //                return common.NewError("Port already exists:", inbound.Port)
+ //            }
+ //        }
+	// }
 
 	db := database.GetDB()
 	tx := db.Begin()
@@ -231,14 +236,16 @@ func (s *InboundService) GetInbound(id int) (*model.Inbound, error) {
 }
 
 func (s *InboundService) UpdateInbound(inbound *model.Inbound) (*model.Inbound, error) {
-	exist, err := s.checkPortExist(inbound.Port, inbound.Id)
-	if err != nil {
-		return inbound, err
-	}
-	if exist {
-		return inbound, common.NewError("Port already exists:", inbound.Port)
-	}
-
+    // if !strings.HasPrefix(inbound.Listen, "/") && !strings.HasPrefix(inbound.Listen, "@") {
+    //     exist, err := s.checkPortExist(inbound.Port, inbound.Id)
+    //     if err != nil {
+    //         return inbound, err
+    //     }
+    //     if exist {
+    //         return inbound, common.NewError("Port already exists:", inbound.Port)
+    //     }
+    // }
+    //
 	oldInbound, err := s.GetInbound(inbound.Id)
 	if err != nil {
 		return inbound, err
@@ -255,7 +262,7 @@ func (s *InboundService) UpdateInbound(inbound *model.Inbound) (*model.Inbound, 
 	oldInbound.Settings = inbound.Settings
 	oldInbound.StreamSettings = inbound.StreamSettings
 	oldInbound.Sniffing = inbound.Sniffing
-	oldInbound.Tag = fmt.Sprintf("inbound-%v", inbound.Port)
+	oldInbound.Tag = fmt.Sprintf("inbound-%v-%v", inbound.Listen, inbound.Port)
 
 	db := database.GetDB()
 	return inbound, db.Save(oldInbound).Error

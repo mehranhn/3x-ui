@@ -6,6 +6,7 @@ import (
 	"sync"
 	"x-ui/logger"
 	"x-ui/xray"
+    "strings"
 
 	"go.uber.org/atomic"
 )
@@ -79,6 +80,20 @@ func (s *XrayService) GetXrayConfig() (*xray.Config, error) {
 		if !inbound.Enable {
 			continue
 		}
+
+
+        if strings.HasPrefix(inbound.Listen, "@") {
+            streamSettings := map[string]interface{}{}
+            json.Unmarshal([]byte(inbound.StreamSettings), &streamSettings)
+
+            streamSettings["security"] = "none"
+
+			modifiedStreamSettings, err := json.Marshal(streamSettings)
+			if err != nil {
+				return nil, err
+			}
+			inbound.StreamSettings = string(modifiedStreamSettings)
+        }
 		// get settings clients
 		settings := map[string]interface{}{}
 		json.Unmarshal([]byte(inbound.Settings), &settings)

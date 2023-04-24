@@ -87,7 +87,7 @@ class DBInbound {
 
     get address() {
         let address = location.hostname;
-        if (!ObjectUtil.isEmpty(this.listen) && this.listen !== "0.0.0.0") {
+        if (!ObjectUtil.isEmpty(this.listen) && this.listen !== "0.0.0.0" && !this.listen.startsWith("@") && !this.listen.startsWith("/")) {
             address = this.listen;
         }
         return address;

@@ -98,7 +98,7 @@ func (a *InboundController) addInbound(c *gin.Context) {
 	user := session.GetLoginUser(c)
 	inbound.UserId = user.Id
 	inbound.Enable = true
-	inbound.Tag = fmt.Sprintf("inbound-%v", inbound.Port)
+	inbound.Tag = fmt.Sprintf("inbound-%v-%v", inbound.Listen, inbound.Port)
 	inbound, err = a.inboundService.AddInbound(inbound)
 	jsonMsgObj(c, I18n(c, "pages.inbounds.addTo"), inbound, err)
 	if err == nil {
